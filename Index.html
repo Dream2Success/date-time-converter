@@ -15,13 +15,13 @@
       text-align: center;
     }
     .container {
-      max-width: 500px;
+      max-width: 600px;
       margin: auto;
       background: #fff;
       padding: 20px;
       border-radius: 8px;
     }
-    input, button {
+    input, button, select {
       width: 100%;
       padding: 10px;
       margin-top: 10px;
@@ -31,6 +31,13 @@
     .output {
       font-weight: bold;
       font-size: 16px;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+    .row input {
+      flex: 1;
     }
   </style>
 </head>
@@ -47,8 +54,10 @@
   <hr>
 
   <div>
-    <label for="datetimeInput">Date & Time (UTC):</label>
-    <input type="datetime-local" id="datetimeInput"/>
+    <label for="dateInput">Date (UTC):</label>
+    <input type="date" id="dateInput"/>
+    <label for="timeInput">Time (HH:MM:SS):</label>
+    <input type="time" id="timeInput" step="1"/>
     <button onclick="convertToTicks()">Convert to Ticks</button>
     <div class="output" id="ticksOutput"></div>
   </div>
@@ -76,12 +85,22 @@
   updateUtcNow();
 
   function convertToTicks() {
-    const datetime = document.getElementById("datetimeInput").value;
-    if (!datetime) {
-      alert("Please enter a valid date and time.");
+    const date = document.getElementById("dateInput").value;
+    const time = document.getElementById("timeInput").value;
+
+    if (!date || !time) {
+      alert("Please enter both date and time.");
       return;
     }
-    const utcDate = new Date(datetime + "Z");
+
+    const datetimeString = `${date}T${time}Z`;
+    const utcDate = new Date(datetimeString);
+
+    if (isNaN(utcDate.getTime())) {
+      alert("Invalid date or time.");
+      return;
+    }
+
     const ticks = TICKS_AT_EPOCH + utcDate.getTime() * TICKS_PER_MILLISECOND;
     document.getElementById("ticksOutput").innerText = `Ticks: ${ticks}`;
   }
