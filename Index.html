@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UTC Time & Ticks Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    .output {
+      font-weight: bold;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>UTC & Ticks Converter</h1>
+
+  <div>
+    <label>Current UTC Time:</label>
+    <div class="output" id="utcNow"></div>
+  </div>
+
+  <hr>
+
+  <div>
+    <label for="datetimeInput">Date & Time (UTC):</label>
+    <input type="datetime-local" id="datetimeInput"/>
+    <button onclick="convertToTicks()">Convert to Ticks</button>
+    <div class="output" id="ticksOutput"></div>
+  </div>
+
+  <hr>
+
+  <div>
+    <label for="ticksInput">Ticks:</label>
+    <input type="text" id="ticksInput"/>
+    <button onclick="convertToDate()">Convert to Date</button>
+    <div class="output" id="dateOutput"></div>
+  </div>
+</div>
+
+<script>
+  const TICKS_AT_EPOCH = 621355968000000000; // .NET ticks at 1970-01-01T00:00:00Z
+  const TICKS_PER_MILLISECOND = 10000;
+
+  function updateUtcNow() {
+    const now = new Date();
+    document.getElementById("utcNow").innerText = now.toISOString();
+  }
+
+  setInterval(updateUtcNow, 1000);
+  updateUtcNow();
+
+  function convertToTicks() {
+    const datetime = document.getElementById("datetimeInput").value;
+    if (!datetime) {
+      alert("Please enter a valid date and time.");
+      return;
+    }
+    const utcDate = new Date(datetime + "Z");
+    const ticks = TICKS_AT_EPOCH + utcDate.getTime() * TICKS_PER_MILLISECOND;
+    document.getElementById("ticksOutput").innerText = `Ticks: ${ticks}`;
+  }
+
+  function convertToDate() {
+    const ticks = parseInt(document.getElementById("ticksInput").value);
+    if (isNaN(ticks)) {
+      alert("Please enter a valid number for ticks.");
+      return;
+    }
+    const msSinceEpoch = (ticks - TICKS_AT_EPOCH) / TICKS_PER_MILLISECOND;
+    const date = new Date(msSinceEpoch);
+    document.getElementById("dateOutput").innerText = `Date (UTC): ${date.toISOString()}`;
+  }
+</script>
+
+</body>
+</html>
